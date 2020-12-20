@@ -4,7 +4,7 @@ const fractions = 12;
 const apiUri = 'https://api.binance.com/api/v3/ticker/price';
 
 const defract = (value) => {
-    return parseFloat(value.toFixed(fractions));
+    return value.toFixed(fractions).padEnd(15,0);
 }
 
 const getSymbolPrices = async (directSymbol, conversionSymbols) => {
@@ -100,7 +100,7 @@ const main = async () => {
     const diffResult = {
         chainValue: defract(chainFinalValue),
         directValue: defract(direct.value),
-        diff: diff.toFixed(fractions),
+        diff: diff.toFixed(fractions).padEnd(15,0),
         profit: diff > 0
     };
 
