@@ -7,6 +7,9 @@
 </template>
 
 <style scoped>
+.title {
+  font-weight: normal;
+}
 </style>
 
 <script>
