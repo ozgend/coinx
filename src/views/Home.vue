@@ -53,19 +53,24 @@
             </div>
 
             <div
-              class="select is-large is-fullwidth"
+              class="field conversion-pair"
               v-show="isDirectCurrencySelectVisible"
             >
-              <select
-                multiple
-                @change="setDirectConversionPair($event.target.value)"
-                size="6"
-                class="has-text-primary has-background-dark has-text-centered"
+              <ul
+                class="symbol-selection-list has-text-centered is-fullwidth input"
               >
-                <option v-for="pair in filteredSymbolPairs" :key="pair">
-                  {{ pair }}
-                </option>
-              </select>
+                <li
+                  class="has-text-primary has-background-dark py-1"
+                  v-for="pair in filteredSymbolPairs"
+                  :key="pair"
+                >
+                  <span
+                    class="is-link is-size-4"
+                    @click="setDirectConversionPair(pair)"
+                    >{{ pair }}</span
+                  >
+                </li>
+              </ul>
             </div>
           </div>
 
@@ -124,8 +129,25 @@ progress,
   margin: 0 !important;
   padding: 0 !important;
 }
-select {
+
+.conversion-pair {
+  position: relative;
+}
+
+.symbol-selection-list {
+  position: absolute;
   z-index: 999;
+  height: 20rem;
+  overflow: hidden;
+  overflow-y: scroll;
+  width: 100%;
+  padding: 0;
+}
+.symbol-selection-list > li {
+  cursor: pointer;
+}
+.symbol-selection-list > li:hover {
+  background-color: #2f2f2f !important;
 }
 </style>
 
