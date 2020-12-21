@@ -1,43 +1,21 @@
 # coinx
-calculate profit via difcoin conversion vs. direct conversion
+lookup coin exchange rates and (try to) calculate profit via cross coin conversions
 
-## todo
-- include commission rates
-- find profit for conversion paths
+https://coin-ex.web.app/
 
-## run
-```
-npm run coinx [unit] [coin conversion]
-```
+![screen](./screen.gif "screen")
 
-```bash
-npm run coinx 1 "BNB>LTC, LTC>ETH, ETH>BTC"
-```
+### notes
 
-## sample output
+- coin exchange rates are fetched from public [binance rest api](https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md)
 
 
-**multiple conversions with given path**
+### todo
+- include market specific commission rates
+- add multiple market apis
+- find profitable exchange paths maybe?
 
-| path  |  symbol   | price                 |      unit             |     value             |
-| ----- | :-------- | --------------------: | --------------------: | --------------------: | 
-| 0     | 'BNB>LTC' | 0.304414003044        | 1.000000000000        | 0.304414003044        |
-| 1     | 'LTC>ETH' | 0.177990000000        | 0.304414003044        | 0.054182648402        |
-| 2     | 'ETH>BTC' | 0.027528000000        | 0.054182648402        | 0.001491539945        |
+---
+***disclaimer***
 
-
-**direct conversion**
-
-| path  |  symbol   | price                 |      unit             |     value             |
-| ----- | --------- | --------------------: | --------------------: | --------------------: | 
-| 0     | 'BNB>BTC' | 0.001489500000        |  1                    | 0.001489500000        |
-
-
-**diff result**
-
-|             |     value        |
-| ----------- | ---------------: | 
-| chainValue  | 0.001491539945   |
-| directValue | 0.001489500000   |
-|    diff     | 0.000002039945   |
-|   profit    | true             |
+*this personal project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the Binance, or any of its subsidiaries or its affiliates.*
