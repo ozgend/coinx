@@ -14,6 +14,30 @@
 </head>
 
 <body>
+
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAQ72CEh178HBA9oJCUhIR7Lzs30BXokZc",
+      authDomain: "coin-ex.firebaseapp.com",
+      projectId: "coin-ex",
+      storageBucket: "coin-ex.appspot.com",
+      messagingSenderId: "641130667530",
+      appId: "1:641130667530:web:31b839f7e6c9bdf33389f3",
+      measurementId: "G-MWDW0F1FZG"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    window.__fba__ = firebase.analytics();
+  </script>
+
   <noscript>
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
         Please enable it to continue.</strong>

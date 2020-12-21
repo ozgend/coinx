@@ -234,6 +234,9 @@ export default {
         this.directConversionPair
       );
       this.isConversionRequired = false;
+      window.__fba__.logEvent('search', {
+        search_term: this.directConversionPair
+      });
       this.setBusy(false);
     }
   }
