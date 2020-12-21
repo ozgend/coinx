@@ -1,11 +1,23 @@
 <template>
   <div class="home">
+    <div>
+      <progress
+        v-show="isBusy"
+        class="progress is-small is-primary is-fullwidth"
+        max="100"
+      >
+        15%
+      </progress>
+      <div v-show="!isBusy" class="progress-spacer"></div>
+    </div>
+
     <div class="container py-6 px-6">
       <div class="container has-text-centered">
         <div class="columns">
           <div class="column">
             <div class="field">
-              <label class="label is-fullwidth has-text-primary has-text-left"
+              <label
+                class="label is-fullwidth has-text-grey-light has-text-left"
                 >Set amount</label
               >
               <div class="control">
@@ -14,15 +26,16 @@
                   type="number"
                   v-model="amount"
                   placeholder="AMOUNT"
-                  @keyup="requireConversion = true"
+                  @keyup="isConversionRequired = true"
                 />
               </div>
             </div>
           </div>
           <div class="column">
             <div class="field">
-              <label class="label is-fullwidth has-text-primary has-text-left"
-                >Select symbol pair</label
+              <label
+                class="label is-fullwidth has-text-grey-light has-text-left"
+                >Select symbol, ie. LTC>BTC</label
               >
               <div class="control">
                 <input
@@ -38,7 +51,10 @@
               </div>
             </div>
 
-            <div class="select is-large" v-show="isDirectCurrencySelectVisible">
+            <div
+              class="select is-large is-fullwidth"
+              v-show="isDirectCurrencySelectVisible"
+            >
               <select
                 multiple
                 @change="setDirectConversionPair($event.target.value)"
@@ -54,21 +70,22 @@
 
           <div class="column">
             <div class="field">
-              <label class="label is-fullwidth has-text-primary has-text-left"
-                >!</label
+              <label
+                class="label is-fullwidth has-text-grey-light has-text-left"
+                >Check value</label
               >
               <div class="control">
                 <button
-                  v-show="requireConversion"
-                  class="button is-large is-fullwidth has-text-primary has-background-dark has-text-centered"
+                  v-show="isConversionRequired"
+                  class="button is-large is-fullwidth has-text-grey-lighter has-background-dark has-text-centered"
                   @click="convertSymbol()"
                   readonly
                 >
                   CONVERT
                 </button>
                 <input
-                  v-show="!requireConversion"
-                  class="input is-fullwidth is-large has-text-primary has-background-dark has-text-centered"
+                  v-show="!isConversionRequired"
+                  class="input is-fullwidth is-large has-text-info has-background-dark has-text-centered"
                   type="text"
                   v-model="conversionResult.direct.price"
                   readonly
@@ -89,6 +106,7 @@
 input,
 button {
   outline: none !important;
+  text-transform: uppercase;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -97,6 +115,16 @@ input::-webkit-inner-spin-button {
 }
 input[type='number'] {
   -moz-appearance: textfield;
+}
+progress,
+.progress-spacer {
+  border-radius: 0 !important;
+  height: 0.25rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+select {
+  z-index: 999;
 }
 </style>
 
@@ -108,13 +136,14 @@ export default {
   name: 'Home',
   data: function () {
     return {
+      isBusy: false,
       amount: 0,
       symbolPairs: [],
       filteredSymbolPairs: [],
       selectedPairs: [],
       directConversionPair: null,
       isDirectCurrencySelectVisible: false,
-      requireConversion: true,
+      isConversionRequired: true,
       conversionResult: { direct: { price: 0 }, conversions: [] }
     };
   },
@@ -122,7 +151,12 @@ export default {
     this.loadSymbolPairs();
   },
   methods: {
+    setBusy(busy) {
+      this.isBusy = busy;
+    },
+
     async loadSymbolPairs() {
+      this.setBusy(true);
       if (!localStorage.symbolPairs) {
         console.log('-- request data');
         localStorage.symbolPairs = JSON.stringify(
@@ -131,12 +165,13 @@ export default {
       }
       this.symbolPairs = JSON.parse(localStorage.symbolPairs);
       this.filteredSymbolPairs = this.symbolPairs;
+      this.setBusy(false);
     },
 
     setDirectConversionPair(pair) {
       this.directConversionPair = pair;
       this.isDirectCurrencySelectVisible = false;
-      this.requireConversion = true;
+      this.isConversionRequired = true;
     },
 
     toggleSymbolPair(pair, willRemove) {
@@ -159,17 +194,19 @@ export default {
 
     async convertSymbol() {
       if (
-        !this.requireConversion ||
+        !this.isConversionRequired ||
         !this.directConversionPair ||
         this.amount === 0
       ) {
         return;
       }
+      this.setBusy(true);
       this.conversionResult = await _symbolService.convertToSymbols(
         this.amount,
         this.directConversionPair
       );
-      this.requireConversion = false;
+      this.isConversionRequired = false;
+      this.setBusy(false);
     }
   }
 };
