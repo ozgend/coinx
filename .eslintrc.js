@@ -18,6 +18,13 @@ module.exports = {
     'quotes': ['error', 'single'],
     'arrow-parens': 0,
     'generator-star-spacing': 0,
-    'comma-dangle': [2, 'never']
+    'comma-dangle': [2, 'never'],
+    'semi': ['error', 'always'],
+    'brace-style': ['error', 'stroustrup'],
+    'space-before-function-paren': ['error', {
+      "anonymous": "ignore",
+      "named": "ignore",
+      "asyncArrow": "ignore"
+    }]
   }
 }
