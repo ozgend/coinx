@@ -43,6 +43,7 @@
                   type="text"
                   placeholder="SYMBOL"
                   v-model="directConversionPair"
+                  @focus="directConversionPair = null"
                   @click="
                     isDirectCurrencySelectVisible = !isDirectCurrencySelectVisible
                   "
@@ -76,10 +77,10 @@
               >
               <div class="control">
                 <button
+                  :disabled="isConversionDisabled"
                   v-show="isConversionRequired"
-                  class="button is-large is-fullwidth has-text-grey-lighter has-background-dark has-text-centered"
+                  class="button is-large is-fullwidth has-text-warning has-background-dark has-text-centered"
                   @click="convertSymbol()"
-                  readonly
                 >
                   CONVERT
                 </button>
@@ -137,7 +138,7 @@ export default {
   data: function () {
     return {
       isBusy: false,
-      amount: 0,
+      amount: null,
       symbolPairs: [],
       filteredSymbolPairs: [],
       selectedPairs: [],
@@ -146,6 +147,11 @@ export default {
       isConversionRequired: true,
       conversionResult: { direct: { price: 0 }, conversions: [] }
     };
+  },
+  computed: {
+    isConversionDisabled: function () {
+      return !this.amount || !this.directConversionPair;
+    }
   },
   mounted: function () {
     this.loadSymbolPairs();

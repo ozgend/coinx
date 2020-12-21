@@ -2,6 +2,7 @@
   <div id="app">
     <nav-bar></nav-bar>
     <router-view />
+    <footer-bar></footer-bar>
   </div>
 </template>
 
@@ -52,10 +53,12 @@ a:hover {
 <script>
 // @ is an alias to /src
 import NavBar from './components/NavBar';
+import FooterBar from './components/FooterBar';
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    FooterBar
   },
   mounted: function () {
     console.log('sss');
