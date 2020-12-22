@@ -15,21 +15,7 @@
       <div class="container has-text-centered">
         <div class="columns">
           <div class="column">
-            <div class="field">
-              <label
-                class="label is-fullwidth has-text-grey-light has-text-left"
-                >Set amount</label
-              >
-              <div class="control">
-                <input
-                  class="input is-large is-fullwidth has-text-primary has-background-dark has-text-centered"
-                  type="number"
-                  v-model="amount"
-                  placeholder="AMOUNT"
-                  @keyup="isConversionRequired = true"
-                />
-              </div>
-            </div>
+            <amount-input v-model="amount"></amount-input>
           </div>
           <div class="column">
             <div class="field">
@@ -93,7 +79,7 @@
                   v-show="!isConversionRequired"
                   class="input is-fullwidth is-large has-text-info has-background-dark has-text-centered"
                   type="text"
-                  v-model="conversionResult.direct.price"
+                  v-model="conversionResult.direct.value"
                   readonly
                 />
               </div>
@@ -105,7 +91,7 @@
   </div>
 </template>
 
-<style scoped>
+<style>
 ::placeholder {
   color: #00d1b2 !important;
 }
@@ -152,10 +138,13 @@ progress,
 </style>
 
 <script>
+import EventBus from '../event-bus';
+import AmountInput from '../components/AmountInput';
 import SymbolService from '../services/symbol-service';
 const _symbolService = new SymbolService();
 
 export default {
+  components: { AmountInput },
   name: 'Home',
   data: function () {
     return {
@@ -174,6 +163,13 @@ export default {
     isConversionDisabled: function () {
       return !this.amount || !this.directConversionPair;
     }
+  },
+  created: function () {
+    const _this = this;
+    EventBus.$on('on-amount-input', (value) => {
+      _this.amount = value;
+      _this.isConversionRequired = true;
+    });
   },
   mounted: function () {
     this.loadSymbolPairs();
@@ -234,10 +230,13 @@ export default {
         this.directConversionPair
       );
       this.isConversionRequired = false;
-      window.__fba__.logEvent('search', {
-        search_term: this.directConversionPair
-      });
       this.setBusy(false);
+
+      if (window.__fba__ && window.__fba__.logEvent) {
+        window.__fba__.logEvent('search', {
+          search_term: this.directConversionPair
+        });
+      }
     }
   }
 };

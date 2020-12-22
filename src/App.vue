@@ -59,9 +59,6 @@ export default {
   components: {
     NavBar,
     FooterBar
-  },
-  mounted: function () {
-    console.log('sss');
   }
 };
 </script>
