@@ -7,8 +7,8 @@
       <input
         class="input is-large is-fullwidth has-text-primary has-background-dark has-text-centered"
         type="number"
-        v-bind:value="amount"
-        v-on:input="inputChanged($event.target.value)"
+        v-bind:value="getAmount()"
+        v-on:input="onInput($event.target)"
         placeholder="AMOUNT"
       />
     </div>
@@ -25,10 +25,22 @@
 import EventBus from '../event-bus';
 export default {
   name: 'AmountInput',
-  props: ['amount'],
+  data: function () {
+    return {};
+  },
+
+  mounted: function () {},
   methods: {
-    inputChanged(value) {
-      EventBus.$emit('on-amount-input', value);
+    getAmount() {
+      return EventBus.getModel().amount;
+    },
+    onInput(input) {
+      if (input.value.length === 0 || input.value === '0') {
+        EventBus.$emit('on-cancel-convert');
+        return;
+      }
+      EventBus.$emit('on-input-amount', input.value);
+      EventBus.$emit('on-begin-convert');
     }
   }
 };

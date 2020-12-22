@@ -6,6 +6,8 @@ Vue.config.productionTip = false;
 
 export const bus = new Vue();
 
+// console.log = () => { };
+
 new Vue({
   router,
   render: h => h(App)
