@@ -15,26 +15,15 @@ export default new Vue({
     const _this = this;
 
     this.$on('on-input-amount', (value) => {
-      console.log('on-input-amount');
       _this.model.amount = value;
     });
 
-    this.$on('on-select-symbol', (symbol) => {
-      if (_this.model.selectedSymbols.indexOf(symbol) > -1) {
-        return;
-      }
-      _this.model.selectedSymbols.push(symbol);
-    });
-
-    this.$on('on-deselect-symbol', (symbol) => {
-      if (_this.model.selectedSymbols.indexOf(symbol) < -1) {
-        return;
-      }
-      _this.model.selectedSymbols = _this.model.selectedSymbols.filter(s => s !== symbol);
+    this.$on('on-update-symbol-selection', (symbols) => {
+      _this.model.selectedSymbols = symbols;
     });
 
     this.$on('on-clear-symbol', (symbol) => {
-      _this.model.selectedSymbols = [];
+      console.log('removed all from selectedSymbols');
     });
 
     this.$on('on-begin-convert', async () => {
@@ -78,9 +67,12 @@ export default new Vue({
     async convertSymbol() {
       this.$emit('on-update-busy', true);
 
+      const directConversionPair = `${this.model.selectedSymbols[0].split('>')[0]}>${this.model.selectedSymbols[this.model.selectedSymbols.length - 1].split('>')[1]}`;
+
       const result = await _symbolService.convertToSymbols(
         this.model.amount,
-        this.model.selectedSymbols[0]
+        directConversionPair,
+        this.model.selectedSymbols.length === 1 ? [] : this.model.selectedSymbols
       );
 
       this.$emit('on-update-busy', false);

@@ -4,14 +4,64 @@
       <label class="label is-fullwidth has-text-grey-light has-text-left"
         >Select symbol, ie. LTC>BTC</label
       >
-      <div class="control">
+
+      <div
+        class="field has-addons is-fullwidth border-fix"
+        type="text"
+        v-for="(symbol, index) in selectedSymbols"
+        :key="symbol"
+      >
+        <div class="control is-expanded">
+          <input
+            class="input is-large is-fullwidth is-expanded has-text-primary has-background-dark has-text-centered"
+            type="text"
+            :value="symbol"
+            readonly
+          />
+        </div>
+        <div class="control">
+          <span
+            class="button is-large is-fullwidth has-text-warning has-background-dark has-text-centered"
+            v-show="index === selectedSymbols.length - 1"
+            @click="toggleDisplayCurrencyList()"
+          >
+            <i class="fas fa-plus"></i>
+          </span>
+        </div>
+
+        <div class="control">
+          <span
+            class="button is-large is-fullwidth has-text-danger has-background-dark has-text-centered"
+            @click="removeSymbolFromSelection(symbol)"
+          >
+            <i class="fas fa-minus"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- <div class="control">
+        <input
+          class="input is-large is-fullwidth has-text-primary has-background-dark has-text-centered selected-symbol-list-item my-2"
+          type="text"
+          v-for="symbol in selectedSymbols"
+          :key="symbol"
+          :value="symbol"
+          readonly
+        />
+      </div> -->
+
+      <div
+        class="control"
+        v-show="isCurrencyListVisible || selectedSymbols.length == 0"
+      >
         <input
           class="input is-large is-fullwidth has-text-primary has-background-dark has-text-centered"
           type="text"
-          placeholder="SYMBOL"
-          v-model="inputSymbol"
-          @click="toggleDisplayCurrencyList()"
-          @keyup="filterSymbols($event.target.value)"
+          ref="filterSymbolInput"
+          placeholder="SEARCH SYMBOL"
+          @click="onFilterInputClick()"
+          v-model="symbolFilter"
+          @keyup="filterSymbols()"
         />
       </div>
     </div>
@@ -66,7 +116,8 @@ export default {
     return {
       symbols: [],
       filteredSymbols: [],
-      inputSymbol: null,
+      selectedSymbols: [],
+      symbolFilter: null,
       isCurrencyListVisible: false
     };
   },
@@ -81,29 +132,52 @@ export default {
     EventBus.$emit('on-begin-loading-symbols');
   },
   methods: {
-    filterSymbols(value) {
-      if (this.inputSymbol && this.inputSymbol.length > 1) {
+    filterSymbols() {
+      if (this.symbolFilter && this.symbolFilter.length > 1) {
         this.filteredSymbols = this.symbols.filter(
-          (p) => p.toLowerCase().indexOf(this.inputSymbol.toLowerCase()) > -1
+          (p) => p.toLowerCase().indexOf(this.symbolFilter.toLowerCase()) > -1
         );
         // eslint-disable-next-line brace-style
       } else {
         this.filteredSymbols = this.symbols;
       }
     },
-    toggleDisplayCurrencyList() {
-      if (!this.isCurrencyListVisible) {
-        this.inputSymbol = null;
-        EventBus.$emit('on-cancel-convert');
-        EventBus.$emit('on-clear-symbol');
+    onFilterInputClick() {
+      if (this.selectedSymbols.length > 0) {
+        return;
       }
+      this.toggleDisplayCurrencyList();
+    },
+    toggleDisplayCurrencyList() {
       this.isCurrencyListVisible = !this.isCurrencyListVisible;
+      if (this.isCurrencyListVisible) {
+        this.$refs.filterSymbolInput.focus();
+        if (this.selectedSymbols.length > 0) {
+          this.symbolFilter = `${
+            this.selectedSymbols[this.selectedSymbols.length - 1].split('>')[1]
+          }>`;
+          this.filterSymbols();
+        }
+      }
     },
     onSelectSymbol(symbol) {
-      this.inputSymbol = symbol;
       this.isCurrencyListVisible = false;
-      EventBus.$emit('on-select-symbol', symbol);
+      this.addSymbolToSelection(symbol);
       EventBus.$emit('on-begin-convert');
+    },
+    addSymbolToSelection(symbol) {
+      if (this.selectedSymbols.indexOf(symbol) > -1) {
+        return;
+      }
+      this.selectedSymbols.push(symbol);
+      EventBus.$emit('on-update-symbol-selection', this.selectedSymbols);
+    },
+    removeSymbolFromSelection(symbol) {
+      if (this.selectedSymbols.indexOf(symbol) < -1) {
+        return;
+      }
+      this.selectedSymbols = this.selectedSymbols.filter((s) => s !== symbol);
+      EventBus.$emit('on-update-symbol-selection', this.selectedSymbols);
     }
   }
 };
